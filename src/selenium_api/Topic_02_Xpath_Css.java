@@ -24,7 +24,7 @@ public class Topic_02_Xpath_Css {
   }
 
   @Test
-  public void f() {
+  public void Topic_02_Xpath_Css() {
 	  /*
 	   * id
 	   * class
