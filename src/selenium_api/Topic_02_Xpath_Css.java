@@ -2,6 +2,7 @@ package selenium_api;
 
 import java.util.concurrent.TimeUnit;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.annotations.AfterClass;
@@ -24,6 +25,8 @@ public class Topic_02_Xpath_Css {
 
   @Test
   public void f() {
+	  driver.findElement(By.xpath("//input[@name='q']")).sendKeys("Le Tran Phuong");
+	  driver.findElement(By.xpath("//div[@class='FPdoLc tfB0Bf']//input[@name='btnK']")).click();
 	  
   }
   
