@@ -25,8 +25,22 @@ public class Topic_02_Xpath_Css {
 
   @Test
   public void f() {
+	  /*
+	   * id
+	   * class
+	   * name
+	   * css
+	   * linkText
+	   * partialLinkText
+	   * tagName
+	   * xpath:    //tagname[@attribute='value'];
+	   * 
+	   */ 
+	 
+	  
 	  driver.findElement(By.xpath("//input[@name='q']")).sendKeys("Le Tran Phuong");
 	  driver.findElement(By.xpath("//div[@class='FPdoLc tfB0Bf']//input[@name='btnK']")).click();
+	  
 	  
   }
   
