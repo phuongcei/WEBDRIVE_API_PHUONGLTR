@@ -17,8 +17,11 @@ public class Topic_01_CheckEnvironment {
 	
 	@BeforeClass
 	public void beforeClass() {
+		//** Window
+//		System.setProperty("webdriver.chrome.driver", ".\\lib\\chromedriver_win.exe");
 		
-		System.setProperty("webdriver.chrome.driver", ".\\lib\\chromedriver_win.exe");
+		//** Mac
+//		System.setProperty("webdriver.chrome.driver", "lib/chromedriver");
 		driver = new ChromeDriver();
 		
 //		driver = new FirefoxDriver();
