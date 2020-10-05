@@ -17,9 +17,13 @@ public class TemplateClass {
 		// Firefox Driver
 		// driver = new FirefoxDriver();
 
-		// Chrome Driver
-		System.setProperty("webdriver.chrome.driver", ".\\lib\\chromedriver_win.exe");
-		driver = new ChromeDriver();
+		// Chrome Driver on Window
+		// System.setProperty("webdriver.chrome.driver", ".\\lib\\chromedriver_win.exe");
+		
+		// Chrome Driver on Mac
+		// System.setProperty("webdriver.chrome.driver", "./lib/chromedriver");
+		
+		//driver = new ChromeDriver();
 
 		driver.get("https://google.com");
 		driver.manage().window().maximize();
