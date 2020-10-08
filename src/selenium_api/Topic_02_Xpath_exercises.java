@@ -94,7 +94,7 @@ public class Topic_02_Xpath_exercises {
 //		Test Script 03: Login with Email invalid
 //		* Step 01 - Truy cập vào trang: http://live.demoguru99.com/
 //		* Step 02 - Click vào link "My Account" để tới trang đăng nhập
-//		* Step 03 - Nhập email invalid: 123434234@12312.123123
+//		* Step 03 - Nhập email invalid: 123434234@12312.12312
 //		* Step 04 - Click Login button
 //		* Step 05 - Verify error message xuất hiện:  Please enter a valid email address. For example johndoe@domain.com.
 		
