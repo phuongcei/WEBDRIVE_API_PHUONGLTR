@@ -189,3 +189,5 @@ public class Topic_02_Xpath_exercises {
 	}
 
 }
+
+//*[substring(@for, string-length(@for) - string-length('ato') + 1) = 'ato']
