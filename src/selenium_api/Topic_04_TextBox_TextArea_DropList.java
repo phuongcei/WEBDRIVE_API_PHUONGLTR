@@ -22,6 +22,10 @@ public class Topic_04_TextBox_TextArea_DropList {
 		// Chrome MAC -- cannot use chrome for this case due to issue at Birthday field
 //		System.setProperty("webdriver.chrome.driver", "./lib/chromedriver_mac_chrome86");
 //		driver = new ChromeDriver();
+		
+		// Chrome Windows:
+//		System.setProperty("webdriver.chrome.driver", ".\\lib\\chromedriver_win_chrome86.exe");
+//		driver = new ChromeDriver();
 
 		driver.manage().window().maximize();
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
@@ -101,7 +105,7 @@ public class Topic_04_TextBox_TextArea_DropList {
 
 		driver.findElement(passBy).sendKeys(passStr);
 
-		driver.findElement(createNewCusBtn).click();
+//		driver.findElement(createNewCusBtn).click();
 
 		Assert.assertEquals(driver.findElement(By.xpath("//p[contains(text(), 'Customer Registered Successfully')]")).getText(), "Customer Registered Successfully!!!");
 		customerID = driver.findElement(By.xpath("//td[text()='Customer ID']/following-sibling::td")).getText();
