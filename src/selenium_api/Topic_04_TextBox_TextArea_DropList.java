@@ -1,12 +1,14 @@
 package selenium_api;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -16,28 +18,28 @@ import org.testng.annotations.Test;
 public class Topic_04_TextBox_TextArea_DropList {
 	WebDriver driver;
 
-	private String userID, password, emailId, customerName, gender, dob, address, city, state, pinNum, telNum, customerID;
+	private String userID, password, emailId, customerName, gender, dob, address, city, state, pinNum, telNum,
+			customerID;
 	private String customerNameNew, cityNew, passStr;
 
 	@BeforeClass
 	public void beforeClass() {
 		// Firefox
-		driver = new FirefoxDriver();
+//		driver = new FirefoxDriver();
 
 		// Chrome MAC -- cannot use chrome for this case due to issue at Birthday field
 //		System.setProperty("webdriver.chrome.driver", "./lib/chromedriver_mac_chrome86");
 //		driver = new ChromeDriver();
 
 		// Chrome Windows:
-//		System.setProperty("webdriver.chrome.driver", ".\\lib\\chromedriver_win_chrome86.exe");
-//		driver = new ChromeDriver();
+		System.setProperty("webdriver.chrome.driver", ".\\lib\\chromedriver_win_chrome86.exe");
+		driver = new ChromeDriver();
 
 		driver.manage().window().maximize();
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 
 	}
 
-	
 	public void TC01_handleTextboxTextArea() {
 		driver.get("http://demo.guru99.com/v4/");
 
@@ -81,7 +83,8 @@ public class Topic_04_TextBox_TextArea_DropList {
 
 		driver.findElement(By.xpath("//input[@name='btnLogin']")).click();
 
-		WebElement homePageMessage = driver.findElement(By.xpath("//marquee[text()=\"Welcome To Manager's Page of Guru99 Bank\"]"));
+		WebElement homePageMessage = driver
+				.findElement(By.xpath("//marquee[text()=\"Welcome To Manager's Page of Guru99 Bank\"]"));
 
 		// Verify Home Page is displayed.
 		Assert.assertTrue(homePageMessage.isDisplayed());
@@ -112,11 +115,15 @@ public class Topic_04_TextBox_TextArea_DropList {
 
 		driver.findElement(createNewCusBtn).click();
 
-		Assert.assertEquals(driver.findElement(By.xpath("//p[contains(text(), 'Customer Registered Successfully')]")).getText(), "Customer Registered Successfully!!!");
+		Assert.assertEquals(
+				driver.findElement(By.xpath("//p[contains(text(), 'Customer Registered Successfully')]")).getText(),
+				"Customer Registered Successfully!!!");
 		customerID = driver.findElement(By.xpath("//td[text()='Customer ID']/following-sibling::td")).getText();
 		System.out.println("Customer ID: " + customerID);
 
-		Assert.assertEquals(driver.findElement(By.xpath("//td[text()='Customer Name']/following-sibling::td")).getText(), customerName);
+		Assert.assertEquals(
+				driver.findElement(By.xpath("//td[text()='Customer Name']/following-sibling::td")).getText(),
+				customerName);
 //		Assert.assertEquals(driver.findElement(genderBy).getText(), gender);
 //		Assert.assertEquals(driver.findElement(birthdayBy).getText(), dob);
 //		Assert.assertEquals(driver.findElement(addressBy).getText(), address);
@@ -146,7 +153,8 @@ public class Topic_04_TextBox_TextArea_DropList {
 
 		driver.findElement(By.xpath("//input[@value='Submit']")).click();
 
-		Assert.assertEquals(driver.findElement(By.xpath("//td[text()='City']/following-sibling::td")).getText(), cityNew);
+		Assert.assertEquals(driver.findElement(By.xpath("//td[text()='City']/following-sibling::td")).getText(),
+				cityNew);
 
 	}
 
@@ -154,51 +162,65 @@ public class Topic_04_TextBox_TextArea_DropList {
 	public void TC02_handlePureDropdownList() throws Exception {
 		driver.get("https://automationfc.github.io/basic-form/index.html");
 
+		String testing[] = { "Automation", "Mobile", "Desktop" };
+
 		WebElement JobRole1 = driver.findElement(By.xpath("//select[@id='job1']"));
 
 		// Pure Dropdown list use Select class to handle
 		Select select = new Select(JobRole1);
 
-		// Check this Job Role 1 is not multiple 
+		// Check this Job Role 1 is not multiple
 		Assert.assertFalse(select.isMultiple());
-		
+
 		// Select by VisibleText
 		select.selectByVisibleText("Mobile Testing");
 //		Thread.sleep(3000);
-		
+
 		// Check value after selecting
 		Assert.assertEquals(select.getFirstSelectedOption().getText(), "Mobile Testing");
-		
+
 //		System.out.println(select.getFirstSelectedOption().getText());
-		
+
 		select.selectByValue("manual");
-		
+
 		Assert.assertEquals(select.getFirstSelectedOption().getText(), "Manual Testing");
-		
-		
+
 		select.selectByIndex(9);
-		
+
 		Assert.assertEquals(select.getFirstSelectedOption().getText(), "Functional UI Testing");
-		
+
 		Assert.assertEquals(select.getOptions().size(), 10);
 		System.out.println("Number of options in dropdown: " + select.getOptions().size());
-		
-		
+
+		// Verify multiple selected dropdown list
 		WebElement JobRole2 = driver.findElement(By.xpath("//select[@id='job2']"));
-		
+
 		Select select2 = new Select(JobRole2);
-		
+
 		Assert.assertTrue(select2.isMultiple());
-		
-		select2.selectByVisibleText("Automation");
-		select2.selectByVisibleText("Mobile");
-		select2.selectByVisibleText("Desktop");
-	 
-		
-		
+
+		// Select by visible text
+		for (String visibleText : testing) {
+			select2.selectByVisibleText(visibleText);
+		}
+
+		// Get list selected items
+		List<WebElement> SelectedElements = select2.getAllSelectedOptions();
+		Assert.assertEquals(SelectedElements.size(), 3);
+
+		// Define for list string of selected items
+		List<String> actualValues = new ArrayList<String>();
+
+		for (WebElement selItem : SelectedElements) {
+			actualValues.add(selItem.getText());
+		}
+
+		// Convert actual string array to a list for assert
+		List<String> expectedValues = Arrays.asList(testing);
+
+		// Assert to make sure selected items are correct
+		Assert.assertEquals(actualValues, expectedValues);
 	}
-	
-	
 
 	@AfterClass
 	public void afterClass() {
