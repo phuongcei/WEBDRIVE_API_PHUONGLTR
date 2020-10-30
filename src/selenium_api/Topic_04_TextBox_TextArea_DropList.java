@@ -192,7 +192,7 @@ public class Topic_04_TextBox_TextArea_DropList {
 		Assert.assertEquals(select.getOptions().size(), 10);
 		System.out.println("Number of options in dropdown: " + select.getOptions().size());
 
-		// Verify multiple selected dropdown list
+		// Verify multiple selected dropdown list - https://gist.github.com/daominhdam/9b58f3f533922b4148498fe10d6ecdd5
 		WebElement JobRole2 = driver.findElement(By.xpath("//select[@id='job2']"));
 
 		Select select2 = new Select(JobRole2);
