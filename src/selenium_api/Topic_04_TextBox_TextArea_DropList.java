@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -18,22 +18,21 @@ import org.testng.annotations.Test;
 public class Topic_04_TextBox_TextArea_DropList {
 	WebDriver driver;
 
-	private String userID, password, emailId, customerName, gender, dob, address, city, state, pinNum, telNum,
-			customerID;
+	private String userID, password, emailId, customerName, dob, address, city, state, pinNum, telNum, customerID;
 	private String customerNameNew, cityNew, passStr;
 
 	@BeforeClass
 	public void beforeClass() {
 		// Firefox
-//		driver = new FirefoxDriver();
+		driver = new FirefoxDriver();
 
 		// Chrome MAC -- cannot use chrome for this case due to issue at Birthday field
 //		System.setProperty("webdriver.chrome.driver", "./lib/chromedriver_mac_chrome86");
 //		driver = new ChromeDriver();
 
 		// Chrome Windows:
-		System.setProperty("webdriver.chrome.driver", ".\\lib\\chromedriver_win_chrome86.exe");
-		driver = new ChromeDriver();
+//		System.setProperty("webdriver.chrome.driver", ".\\lib\\chromedriver_win_chrome86.exe");
+//		driver = new ChromeDriver();
 
 		driver.manage().window().maximize();
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
@@ -49,7 +48,6 @@ public class Topic_04_TextBox_TextArea_DropList {
 
 		customerName = "phuongcei";
 		customerNameNew = "Man Hoang";
-		gender = "female";
 		dob = "1989-05-03";
 		address = "59 Nguyen Chanh \n Hoa Khanh Bac";
 		city = "Da Nang";
@@ -60,18 +58,13 @@ public class Topic_04_TextBox_TextArea_DropList {
 		passStr = "111111";
 
 		By customerNameBy = By.xpath("//td[text()='Customer Name']/following-sibling::td/input");
-		By genderBy = By.xpath("//td[text()='Gender']/following-sibling::td");
 		By birthdayCreateBy = By.xpath("//td[text()='Date of Birth']/following-sibling::td/input");
-		By birthdayBy = By.xpath("//td[text()='Birthdate']/following-sibling::td/input");
 		By addressBy = By.xpath("//td[text()='Address']/following-sibling::td/textarea");
 		By cityBy = By.xpath("//td[text()='City']/following-sibling::td/input");
 		By stateBy = By.xpath("//td[text()='State']/following-sibling::td/input");
 		By pinCreateBy = By.xpath("//td[text()='PIN']/following-sibling::td/input");
-		By pinBy = By.xpath("//td[text()='Pin']/following-sibling::td/input");
 		By telCreateBy = By.xpath("//td[text()='Mobile Number']/following-sibling::td/input");
-		By telBy = By.xpath("//td[text()='Mobile No.']/following-sibling::td/input");
 		By emailCreateBy = By.xpath("//td[text()='E-mail']/following-sibling::td/input");
-		By emailBy = By.xpath("//td[text()='Email']/following-sibling::td/input");
 		By passBy = By.xpath("//td[text()='Password']/following-sibling::td/input");
 		By createNewCusBtn = By.xpath("//input[@type='submit']");
 
@@ -83,8 +76,7 @@ public class Topic_04_TextBox_TextArea_DropList {
 
 		driver.findElement(By.xpath("//input[@name='btnLogin']")).click();
 
-		WebElement homePageMessage = driver
-				.findElement(By.xpath("//marquee[text()=\"Welcome To Manager's Page of Guru99 Bank\"]"));
+		WebElement homePageMessage = driver.findElement(By.xpath("//marquee[text()=\"Welcome To Manager's Page of Guru99 Bank\"]"));
 
 		// Verify Home Page is displayed.
 		Assert.assertTrue(homePageMessage.isDisplayed());
@@ -115,15 +107,11 @@ public class Topic_04_TextBox_TextArea_DropList {
 
 		driver.findElement(createNewCusBtn).click();
 
-		Assert.assertEquals(
-				driver.findElement(By.xpath("//p[contains(text(), 'Customer Registered Successfully')]")).getText(),
-				"Customer Registered Successfully!!!");
+		Assert.assertEquals(driver.findElement(By.xpath("//p[contains(text(), 'Customer Registered Successfully')]")).getText(), "Customer Registered Successfully!!!");
 		customerID = driver.findElement(By.xpath("//td[text()='Customer ID']/following-sibling::td")).getText();
 		System.out.println("Customer ID: " + customerID);
 
-		Assert.assertEquals(
-				driver.findElement(By.xpath("//td[text()='Customer Name']/following-sibling::td")).getText(),
-				customerName);
+		Assert.assertEquals(driver.findElement(By.xpath("//td[text()='Customer Name']/following-sibling::td")).getText(), customerName);
 //		Assert.assertEquals(driver.findElement(genderBy).getText(), gender);
 //		Assert.assertEquals(driver.findElement(birthdayBy).getText(), dob);
 //		Assert.assertEquals(driver.findElement(addressBy).getText(), address);
@@ -153,12 +141,10 @@ public class Topic_04_TextBox_TextArea_DropList {
 
 		driver.findElement(By.xpath("//input[@value='Submit']")).click();
 
-		Assert.assertEquals(driver.findElement(By.xpath("//td[text()='City']/following-sibling::td")).getText(),
-				cityNew);
+		Assert.assertEquals(driver.findElement(By.xpath("//td[text()='City']/following-sibling::td")).getText(), cityNew);
 
 	}
 
-	@Test
 	public void TC02_handlePureDropdownList() throws Exception {
 		driver.get("https://automationfc.github.io/basic-form/index.html");
 
@@ -220,6 +206,75 @@ public class Topic_04_TextBox_TextArea_DropList {
 
 		// Assert to make sure selected items are correct
 		Assert.assertEquals(actualValues, expectedValues);
+	}
+
+	public void TC03_handleHTMLDropdownList() {
+		String email;
+
+//		Truy cập trang https://demo.nopcommerce.com/register
+//		Click Register button trên Header 
+//		Input các thông tin hợp lệ vào form 
+		driver.get("https://demo.nopcommerce.com/register");
+		driver.findElement(By.xpath("//a[@class='ico-register']")).click();
+
+		driver.findElement(By.xpath("//input[@id='gender-male']")).click();
+
+		driver.findElement(By.xpath("//input[@id='FirstName']")).sendKeys("Phuong");
+		driver.findElement(By.xpath("//input[@id='LastName']")).sendKeys("Le");
+
+//		Chọn các giá trị lần lượt 1, May, 1980 ở các dropdownlist 
+//		Kiểm tra số lượng phần tử trong cár dropdownlist lần lượt là 32, 13, 112
+		Select dateselect = new Select(driver.findElement(By.xpath("//select[@name='DateOfBirthDay']")));
+		dateselect.selectByVisibleText("1");
+		dateselect.getFirstSelectedOption();
+		List<WebElement> datelist = dateselect.getOptions();
+		Assert.assertEquals(datelist.size(), 32);
+
+		Select monthselect = new Select(driver.findElement(By.xpath("//select[@name='DateOfBirthMonth']")));
+		monthselect.selectByVisibleText("May");
+		monthselect.getFirstSelectedOption();
+		List<WebElement> monthlist = monthselect.getOptions();
+		Assert.assertEquals(monthlist.size(), 13);
+
+		Select yearselect = new Select(driver.findElement(By.xpath("//select[@name='DateOfBirthYear']")));
+		yearselect.selectByVisibleText("1980");
+		yearselect.getFirstSelectedOption();
+		List<WebElement> yearlist = yearselect.getOptions();
+		Assert.assertEquals(yearlist.size(), 112);
+
+		email = Commons.randomEmail();
+
+		driver.findElement(By.id("Email")).sendKeys(email);
+		driver.findElement(By.id("Password")).sendKeys("123456");
+		driver.findElement(By.id("ConfirmPassword")).sendKeys("123456");
+		driver.findElement(By.xpath("//input[@id='register-button']")).click();
+
+//		Kiểm tra được chuyển đến trang chủ thành công sau khi đăng ký.
+		Assert.assertEquals(driver.findElement(By.xpath("//div[@class='result']")).getText(), "Your registration completed");
+
+//		Click vào My Account và kiểm tra ngày tháng năm trong các dropdownlist là đúng.
+		driver.findElement(By.xpath("//a[contains(@class,'ico-account')]")).click();
+
+		/*
+		 * ***** NOTE: Ở đây cần phải findElement lại 3 dropdownlist vì trang đã được load mới (khi click on My Account) mặc dù xpath không thay đổi. 
+		 * Trường hợp không find lại element sẽ dẫn đến lỗi bên dưới: 
+		 * org.openqa.selenium.StaleElementReferenceException: Element not found in the cache -
+		 * perhaps the page has changed since it was looked up
+		 */
+
+		dateselect = new Select(driver.findElement(By.xpath("//select[@name='DateOfBirthDay']")));
+		Assert.assertEquals(dateselect.getFirstSelectedOption().getText(), "1");
+
+		monthselect = new Select(driver.findElement(By.xpath("//select[@name='DateOfBirthMonth']")));
+		Assert.assertEquals(monthselect.getFirstSelectedOption().getText(), "May");
+
+		yearselect = new Select(driver.findElement(By.xpath("//select[@name='DateOfBirthYear']")));
+		Assert.assertEquals(yearselect.getFirstSelectedOption().getText(), "1980");
+
+	}
+
+	public void TC04_handleCustomDropdownList() {
+
 	}
 
 	@AfterClass
