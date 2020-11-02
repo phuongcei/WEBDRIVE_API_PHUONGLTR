@@ -6,13 +6,11 @@ import java.util.concurrent.TimeUnit;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.Select;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class crawlResults {
 	WebDriver driver;
@@ -23,7 +21,12 @@ public class crawlResults {
 
 	@BeforeClass
 	public void beforeClass() {
-		driver = new FirefoxDriver();
+//		driver = new FirefoxDriver();
+		
+		System.setProperty("webdriver.chrome.driver", ".\\lib\\chromedriver_win_chrome86.exe");
+		driver = new ChromeDriver();
+		
+		
 		driver.get("https://vietlott.vn/");
 
 		driver.manage().window().maximize();
@@ -33,7 +36,7 @@ public class crawlResults {
 	@Test
 	public void crawl_result_from_web() throws Exception {
 
-		driver.findElement(xpath_linkTo645).click();
+		driver.findElement(xpath_linkTo655).click();
 
 		// Get list of dates
 
@@ -54,9 +57,9 @@ public class crawlResults {
 				System.out.print(resultdate.getText() + " ");
 				sel.selectByVisibleText(resultdate.getText().trim());
 				sel.getFirstSelectedOption().click();
-				Thread.sleep(4500);
+				Thread.sleep(6000);
 				driver.findElement(By.xpath("//a[contains(@href, 'DoSearch')]")).click();
-				Thread.sleep(1000);
+				Thread.sleep(3000);
 
 				List<WebElement> bongtrons = driver.findElements(By.xpath("//div[@class='day_so_ket_qua_v2' and contains(@style, 'padding-top')]//span[contains(@class, 'bong_tron')]"));
 
