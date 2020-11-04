@@ -9,15 +9,21 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+
+
+
 public class Topic_04_TextBox_TextArea_DropList {
 	WebDriver driver;
-
+	WebDriverWait waitExplicit;
+	
 	private String userID, password, emailId, customerName, dob, address, city, state, pinNum, telNum, customerID;
 	private String customerNameNew, cityNew, passStr;
 
@@ -25,6 +31,7 @@ public class Topic_04_TextBox_TextArea_DropList {
 	public void beforeClass() {
 		// Firefox
 		driver = new FirefoxDriver();
+		waitExplicit = new WebDriverWait(driver, 30);
 
 		// Chrome MAC -- cannot use chrome for this case due to issue at Birthday field
 //		System.setProperty("webdriver.chrome.driver", "./lib/chromedriver_mac_chrome86");
@@ -273,10 +280,46 @@ public class Topic_04_TextBox_TextArea_DropList {
 
 	}
 
-	public void TC04_handleCustomDropdownList() {
-
+	
+	public void TC04_handleJqueryDropdown() throws Exception {
+// ** Solution:
+//		- Click vào dropdown list
+//		- Wait để tất cả các phần tử trong dropdown list hiển thị
+//		- Get tất cả items trong dropdownlist vào trong 1 list Element (List<WebElement>)
+//		- Dùng vòng lặp duyệt qua các phần tử vào getText()
+//		- Nếu text đc get ra bằng textExpected thì:
+//				+ Scroll den phan tu do
+//				+ Click vao phan tu do
+//				+ Break khoi vong lap
+		
+		driver.get("http://jqueryui.com/resources/demos/selectmenu/default.html");
+		selectItemCustomDropdown("//span[@id='number-button']", "//ul[@id='number-menu']//li[@class='ui-menu-item']/div", "14");
+		Assert.assertTrue(driver.findElement(By.xpath("//span[@id='number-button']/span[@class='ui-selectmenu-text' and text()='14']")).isDisplayed());
+		Thread.sleep(3000);
+		
+		driver.get("http://jqueryui.com/resources/demos/selectmenu/default.html");
+		selectItemCustomDropdown("//span[@id='number-button']", "//ul[@id='number-menu']//li[@class='ui-menu-item']/div", "19");
+		Assert.assertTrue(driver.findElement(By.xpath("//span[@id='number-button']/span[@class='ui-selectmenu-text' and text()='19']")).isDisplayed());
+		Thread.sleep(3000);
+		
+		driver.get("http://jqueryui.com/resources/demos/selectmenu/default.html");
+		selectItemCustomDropdown("//span[@id='number-button']", "//ul[@id='number-menu']//li[@class='ui-menu-item']/div", "5");
+		Assert.assertTrue(driver.findElement(By.xpath("//span[@id='number-button']/span[@class='ui-selectmenu-text' and text()='5']")).isDisplayed());
+		Thread.sleep(3000);
+		
+		
+		
 	}
-
+	@Test
+	public void TC05_handleAngularDropdown() throws Exception{
+		driver.get("https://ej2.syncfusion.com/angular/demos/?_ga=2.262049992.437420821.1575083417-524628264.1575083417#/material/drop-down-list/data-binding");
+		
+		selectItemCustomDropdown("//*[@id='games']/span", "//ul[@id='games_options']/li", "Football");
+		Assert.assertTrue(driver.findElement(By.xpath("//*[@id='games']/span[text()='Football']")).isDisplayed());
+		Thread.sleep(3000);
+	}
+	
+	
 	@AfterClass
 	public void afterClass() {
 		driver.quit();
@@ -294,4 +337,24 @@ public class Topic_04_TextBox_TextArea_DropList {
 
 	}
 
+	public void selectItemCustomDropdown(String parentXpath, String childXpath, String expectedValue) {
+		
+		WebElement element = driver.findElement(By.xpath(parentXpath));
+		element.click();
+		
+		List<WebElement> childList = driver.findElements(By.xpath(childXpath));
+		waitExplicit.until(ExpectedConditions.visibilityOfAllElements(childList));
+		
+		for(WebElement child : childList) {
+			String textItem = child.getText();
+			System.out.println(textItem);
+			if(textItem.equals(expectedValue)) {				
+				child.click();
+				break;
+			}
+		}
+		
+		
+		
+	}
 }
