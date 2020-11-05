@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -17,13 +18,11 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-
-
-
 public class Topic_04_TextBox_TextArea_DropList {
 	WebDriver driver;
 	WebDriverWait waitExplicit;
-	
+	JavascriptExecutor javascriptExecutor;
+
 	private String userID, password, emailId, customerName, dob, address, city, state, pinNum, telNum, customerID;
 	private String customerNameNew, cityNew, passStr;
 
@@ -41,6 +40,7 @@ public class Topic_04_TextBox_TextArea_DropList {
 //		System.setProperty("webdriver.chrome.driver", ".\\lib\\chromedriver_win_chrome86.exe");
 //		driver = new ChromeDriver();
 
+		javascriptExecutor = (JavascriptExecutor) driver;
 		driver.manage().window().maximize();
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 
@@ -263,9 +263,7 @@ public class Topic_04_TextBox_TextArea_DropList {
 		driver.findElement(By.xpath("//a[contains(@class,'ico-account')]")).click();
 
 		/*
-		 * ***** NOTE: Ở đây cần phải findElement lại 3 dropdownlist vì trang đã được load mới (khi click on My Account) mặc dù xpath không thay đổi. 
-		 * Trường hợp không find lại element sẽ dẫn đến lỗi bên dưới: 
-		 * org.openqa.selenium.StaleElementReferenceException: Element not found in the cache -
+		 * ***** NOTE: Ở đây cần phải findElement lại 3 dropdownlist vì trang đã được load mới (khi click on My Account) mặc dù xpath không thay đổi. Trường hợp không find lại element sẽ dẫn đến lỗi bên dưới: org.openqa.selenium.StaleElementReferenceException: Element not found in the cache -
 		 * perhaps the page has changed since it was looked up
 		 */
 
@@ -280,7 +278,6 @@ public class Topic_04_TextBox_TextArea_DropList {
 
 	}
 
-	
 	public void TC04_handleJqueryDropdown() throws Exception {
 // ** Solution:
 //		- Click vào dropdown list
@@ -291,35 +288,37 @@ public class Topic_04_TextBox_TextArea_DropList {
 //				+ Scroll den phan tu do
 //				+ Click vao phan tu do
 //				+ Break khoi vong lap
-		
+
 		driver.get("http://jqueryui.com/resources/demos/selectmenu/default.html");
-		selectItemCustomDropdown("//span[@id='number-button']", "//ul[@id='number-menu']//li[@class='ui-menu-item']/div", "14");
+		selectItemCustomDropdown("//label[text()='Select a number']", "//span[@id='number-button']", "//ul[@id='number-menu']//li[@class='ui-menu-item']/div", "14");
 		Assert.assertTrue(driver.findElement(By.xpath("//span[@id='number-button']/span[@class='ui-selectmenu-text' and text()='14']")).isDisplayed());
 		Thread.sleep(3000);
-		
+
 		driver.get("http://jqueryui.com/resources/demos/selectmenu/default.html");
-		selectItemCustomDropdown("//span[@id='number-button']", "//ul[@id='number-menu']//li[@class='ui-menu-item']/div", "19");
+		selectItemCustomDropdown("//label[text()='Select a number']", "//span[@id='number-button']", "//ul[@id='number-menu']//li[@class='ui-menu-item']/div", "19");
 		Assert.assertTrue(driver.findElement(By.xpath("//span[@id='number-button']/span[@class='ui-selectmenu-text' and text()='19']")).isDisplayed());
 		Thread.sleep(3000);
-		
+
 		driver.get("http://jqueryui.com/resources/demos/selectmenu/default.html");
-		selectItemCustomDropdown("//span[@id='number-button']", "//ul[@id='number-menu']//li[@class='ui-menu-item']/div", "5");
+		selectItemCustomDropdown("//label[text()='Select a number']", "//span[@id='number-button']", "//ul[@id='number-menu']//li[@class='ui-menu-item']/div", "5");
 		Assert.assertTrue(driver.findElement(By.xpath("//span[@id='number-button']/span[@class='ui-selectmenu-text' and text()='5']")).isDisplayed());
 		Thread.sleep(3000);
-		
-		
-		
+
 	}
+
 	@Test
-	public void TC05_handleAngularDropdown() throws Exception{
+	public void TC05_handleAngularDropdown() throws Exception {
 		driver.get("https://ej2.syncfusion.com/angular/demos/?_ga=2.262049992.437420821.1575083417-524628264.1575083417#/material/drop-down-list/data-binding");
+
+		selectItemCustomDropdown("//div[@id='sb-content-header']", "//*[@id='games']/span", "//ul[@id='games_options']/li", "Football");
+//		Assert.assertTrue(driver.findElement(By.xpath("//*[@id='games']//option[text()='Football']")).isDisplayed());
 		
-		selectItemCustomDropdown("//*[@id='games']/span", "//ul[@id='games_options']/li", "Football");
-		Assert.assertTrue(driver.findElement(By.xpath("//*[@id='games']/span[text()='Football']")).isDisplayed());
+		// Ở đây phải assert attribute, vì sau khi chọn, item đó bị ẩn đi không check display như bình thường được 
+		Assert.assertEquals(driver.findElement(By.xpath("//*[@id='games']/span/select/option")).getAttribute("value"), "Game5");
+
 		Thread.sleep(3000);
 	}
-	
-	
+
 	@AfterClass
 	public void afterClass() {
 		driver.quit();
@@ -337,24 +336,30 @@ public class Topic_04_TextBox_TextArea_DropList {
 
 	}
 
-	public void selectItemCustomDropdown(String parentXpath, String childXpath, String expectedValue) {
+	public void selectItemCustomDropdown(String scrollToXpath, String parentXpath, String childXpath, String expectedValue) {
+
+		// Scroll to a specific element to avoid cover before click on:
+		javascriptExecutor.executeScript("arguments[0].scrollIntoView(true);", driver.findElement(By.xpath(scrollToXpath)));
 		
 		WebElement element = driver.findElement(By.xpath(parentXpath));
 		element.click();
-		
+
 		List<WebElement> childList = driver.findElements(By.xpath(childXpath));
-		waitExplicit.until(ExpectedConditions.visibilityOfAllElements(childList));
 		
-		for(WebElement child : childList) {
-			String textItem = child.getText();
+		// Wait để tất cả elements trong dropdown hiển thị 
+		waitExplicit.until(ExpectedConditions.visibilityOfAllElements(childList));
+
+		for (WebElement child : childList) {
+			String textItem = child.getText().trim();
 			System.out.println(textItem);
-			if(textItem.equals(expectedValue)) {				
+			if (textItem.equals(expectedValue)) {
+
+				// scroll to element before click on:
+				javascriptExecutor.executeScript("arguments[0].scrollIntoView(true);", child);
 				child.click();
 				break;
 			}
 		}
-		
-		
-		
+
 	}
 }
