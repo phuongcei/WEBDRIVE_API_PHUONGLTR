@@ -310,13 +310,19 @@ public class Topic_04_TextBox_TextArea_DropList {
 	public void TC05_handleAngularDropdown() throws Exception {
 		driver.get("https://ej2.syncfusion.com/angular/demos/?_ga=2.262049992.437420821.1575083417-524628264.1575083417#/material/drop-down-list/data-binding");
 
-		selectItemCustomDropdown("//div[@id='sb-content-header']", "//*[@id='games']/span", "//ul[@id='games_options']/li", "Football");
+//		selectItemCustomDropdown("//div[@id='sb-content-header']", "//*[@id='games']/span", "//ul[@id='games_options']/li", "Football");
+		selectItemCustomDropdownNew("//*[@id='games']/span", "//ul[@id='games_options']/li", "Football");
 //		Assert.assertTrue(driver.findElement(By.xpath("//*[@id='games']//option[text()='Football']")).isDisplayed());
-		
-		// Ở đây phải assert attribute, vì sau khi chọn, item đó bị ẩn đi không check display như bình thường được 
-		Assert.assertEquals(driver.findElement(By.xpath("//*[@id='games']/span/select/option")).getAttribute("value"), "Game5");
 
-		Thread.sleep(3000);
+		// Ở đây phải assert attribute, vì sau khi chọn, item đó bị ẩn đi không check display như bình thường được
+//		Assert.assertEquals(driver.findElement(By.xpath("//*[@id='games']/span/select/option")).getAttribute("value"), "Game5");
+
+		Assert.assertEquals(getHiddenText("#games_hidden"), "Football");
+
+		// Remote Data dropdown
+		selectItemCustomDropdownNew("//ejs-dropdownlist[@id='customers']", "//ul[@id='customers_options']/li", "Robert King");
+		Assert.assertEquals(getHiddenText("#customers_hidden"), "Robert King");
+
 	}
 
 	@AfterClass
@@ -340,13 +346,13 @@ public class Topic_04_TextBox_TextArea_DropList {
 
 		// Scroll to a specific element to avoid cover before click on:
 		javascriptExecutor.executeScript("arguments[0].scrollIntoView(true);", driver.findElement(By.xpath(scrollToXpath)));
-		
+
 		WebElement element = driver.findElement(By.xpath(parentXpath));
 		element.click();
 
 		List<WebElement> childList = driver.findElements(By.xpath(childXpath));
-		
-		// Wait để tất cả elements trong dropdown hiển thị 
+
+		// Wait để tất cả elements trong dropdown hiển thị
 		waitExplicit.until(ExpectedConditions.visibilityOfAllElements(childList));
 
 		for (WebElement child : childList) {
@@ -362,4 +368,51 @@ public class Topic_04_TextBox_TextArea_DropList {
 		}
 
 	}
+
+	public void selectItemCustomDropdownNew(String parentLocator, String itemLocator, String expectedItem) throws Exception {
+
+		// 1 - Click vao 1 parent de xo het ra tat ca item trong dropdown
+		waitExplicit.until(ExpectedConditions.elementToBeClickable(By.xpath(parentLocator)));
+		driver.findElement(By.xpath(parentLocator)).click();
+//		sleepInSecond(1);
+		Thread.sleep(1000);
+
+		// 2 - Chờ cho tất cả items xuất hiện trong HTML DOM
+		waitExplicit.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(itemLocator)));
+
+		// 3 - Lấy hết tất cả items này đưa vào 1 List elements
+		List<WebElement> allItems = driver.findElements(By.xpath(itemLocator));
+
+		// Tổng số lượng items trong dropdown
+		System.out.println("Total of items in dropdown: " + allItems.size());
+
+		// 4 - Duyệt qua từng items
+		for (WebElement item : allItems) {
+			// 5 - Mỗi lần duyệt qua kiểm tra xem item đó có text giống expectedItem không
+			String actualItem = item.getText();
+			System.out.println("Actual item: " + actualItem);
+
+			// 6 - Nếu như bằng thì click vào và thoát khỏi vòng lặp
+			// - Nếu không bằng thì tiếp tục duyệt tiếp
+
+			if (actualItem.equals(expectedItem)) {
+				// Trước khi click thì cần scroll đến item đó để tránh bị lỗi đè cover
+				javascriptExecutor.executeScript("arguments[0].scrollIntoView(true);", item);
+				Thread.sleep(2000);
+
+				// Wait cho element clickable
+				waitExplicit.until(ExpectedConditions.elementToBeClickable(item));
+				item.click();
+				Thread.sleep(2000);
+				break;
+
+			}
+		}
+
+	}
+
+	public String getHiddenText(String cssLocator) {
+		return (String) javascriptExecutor.executeScript("return document.querySelector(\"" + cssLocator + "\").textContent");
+	}
+
 }
