@@ -23,6 +23,9 @@ public class Topic_04_TextBox_TextArea_DropList {
 	WebDriverWait waitExplicit;
 	JavascriptExecutor javascriptExecutor;
 
+	WebDriverWait wExplicit;
+	JavascriptExecutor jsExecutor;
+
 	private String userID, password, emailId, customerName, dob, address, city, state, pinNum, telNum, customerID;
 	private String customerNameNew, cityNew, passStr;
 
@@ -31,6 +34,7 @@ public class Topic_04_TextBox_TextArea_DropList {
 		// Firefox
 		driver = new FirefoxDriver();
 		waitExplicit = new WebDriverWait(driver, 30);
+		wExplicit = new WebDriverWait(driver, 30);
 
 		// Chrome MAC -- cannot use chrome for this case due to issue at Birthday field
 //		System.setProperty("webdriver.chrome.driver", "./lib/chromedriver_mac_chrome86");
@@ -41,6 +45,7 @@ public class Topic_04_TextBox_TextArea_DropList {
 //		driver = new ChromeDriver();
 
 		javascriptExecutor = (JavascriptExecutor) driver;
+		jsExecutor = (JavascriptExecutor) driver;
 		driver.manage().window().maximize();
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 
@@ -306,7 +311,6 @@ public class Topic_04_TextBox_TextArea_DropList {
 
 	}
 
-	@Test
 	public void TC05_handleAngularDropdown() throws Exception {
 		driver.get("https://ej2.syncfusion.com/angular/demos/?_ga=2.262049992.437420821.1575083417-524628264.1575083417#/material/drop-down-list/data-binding");
 
@@ -323,6 +327,49 @@ public class Topic_04_TextBox_TextArea_DropList {
 		selectItemCustomDropdownNew("//ejs-dropdownlist[@id='customers']", "//ul[@id='customers_options']/li", "Robert King");
 		Assert.assertEquals(getHiddenText("#customers_hidden"), "Robert King");
 
+	}
+
+	@Test
+	public void TC06_handleReactDropdown() throws Exception {
+		String parentLocator = "//div[@id='root']//div[@role='listbox']";
+		String itemLocator = "//div[contains(@class,'menu')]/div";
+		String expectedItem = "Matt";
+		String cssLocator = "[role='listbox']>.menu>.selected";
+
+		driver.get("https://react.semantic-ui.com/maximize/dropdown-example-selection/");
+
+		// Wait cho các element có thể clickable
+		wExplicit.until(ExpectedConditions.elementToBeClickable(By.xpath(parentLocator)));
+		driver.findElement(By.xpath(parentLocator)).click();
+
+		// Wait cho cac itemLocator xuat hien trong HTML DOM:
+		wExplicit.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(itemLocator)));
+
+		// Get all items into a list
+		List<WebElement> allItems = driver.findElements(By.xpath(itemLocator));
+
+		// Duyet qua tung phan tu kiem tra xem text = expected or not
+		for (WebElement item : allItems) {
+			String itemText = item.getText().trim();
+			System.out.println("Actual text of item: " + itemText);
+
+			if (itemText.equals(expectedItem)) {
+				// scroll tới expected item và click on it
+				jsExecutor.executeScript("arguments[0].scrollIntoView(true);", item);
+
+				// wait cho element clickable
+				wExplicit.until(ExpectedConditions.elementToBeClickable(item));
+				item.click();
+				Thread.sleep(3000);
+				break;
+			}
+
+		}
+
+		// Kiem tra item selected
+		// Assert bằng xpath thông thường không tìm thấy text. Cần dùng getHiddenText method
+//		Assert.assertEquals(driver.findElement(By.xpath("//div[contains(@class,'menu')]/div[contains(@class,'selected')]")).getText(), expectedItem);
+		Assert.assertEquals(getHiddenText(cssLocator), expectedItem);
 	}
 
 	@AfterClass
