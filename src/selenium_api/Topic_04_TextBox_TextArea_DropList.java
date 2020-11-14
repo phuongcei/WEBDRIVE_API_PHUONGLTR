@@ -5,8 +5,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.exec.ExecuteException;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -26,6 +28,16 @@ public class Topic_04_TextBox_TextArea_DropList {
 	WebDriverWait wExplicit;
 	JavascriptExecutor jsExecutor;
 
+	WebDriverWait wVuejsExplicit;
+	JavascriptExecutor jsVuejs;
+
+	WebDriverWait wEditable;
+	
+	WebDriverWait wReact;
+
+	WebDriverWait wMulti;
+	JavascriptExecutor jsMulti;
+
 	private String userID, password, emailId, customerName, dob, address, city, state, pinNum, telNum, customerID;
 	private String customerNameNew, cityNew, passStr;
 
@@ -35,6 +47,10 @@ public class Topic_04_TextBox_TextArea_DropList {
 		driver = new FirefoxDriver();
 		waitExplicit = new WebDriverWait(driver, 30);
 		wExplicit = new WebDriverWait(driver, 30);
+		wVuejsExplicit = new WebDriverWait(driver, 30);
+		wEditable = new WebDriverWait(driver, 30);
+		wReact = new WebDriverWait(driver, 30);
+		wMulti = new WebDriverWait(driver, 30);
 
 		// Chrome MAC -- cannot use chrome for this case due to issue at Birthday field
 //		System.setProperty("webdriver.chrome.driver", "./lib/chromedriver_mac_chrome86");
@@ -46,6 +62,9 @@ public class Topic_04_TextBox_TextArea_DropList {
 
 		javascriptExecutor = (JavascriptExecutor) driver;
 		jsExecutor = (JavascriptExecutor) driver;
+		jsVuejs = (JavascriptExecutor) driver;
+		jsMulti = (JavascriptExecutor) driver;
+
 		driver.manage().window().maximize();
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 
@@ -329,7 +348,6 @@ public class Topic_04_TextBox_TextArea_DropList {
 
 	}
 
-	@Test
 	public void TC06_handleReactDropdown() throws Exception {
 		String parentLocator = "//div[@id='root']//div[@role='listbox']";
 		String itemLocator = "//div[contains(@class,'menu')]/div";
@@ -371,6 +389,172 @@ public class Topic_04_TextBox_TextArea_DropList {
 //		Assert.assertEquals(driver.findElement(By.xpath("//div[contains(@class,'menu')]/div[contains(@class,'selected')]")).getText(), expectedItem);
 		Assert.assertEquals(getHiddenText(cssLocator), expectedItem);
 	}
+
+	public void TC07_handleVuejsDropdown() throws Exception {
+		String parentLocator = "//li[@class='dropdown-toggle']";
+		String itemLocator = "//ul[@class='dropdown-menu']/li";
+		String expectedItem = "Third Option";
+
+		driver.get("https://mikerodham.github.io/vue-dropdowns/");
+
+		// Wait all items are clickable and then click on parentLocator to show all list
+		wVuejsExplicit.until(ExpectedConditions.elementToBeClickable(By.xpath(parentLocator)));
+		driver.findElement(By.xpath(parentLocator)).click();
+		Thread.sleep(3000);
+
+		// Wait for all items in dropdown presence in HTML DOM
+		wVuejsExplicit.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(itemLocator)));
+
+		// Get all items into list
+		List<WebElement> allItems = driver.findElements(By.xpath(itemLocator));
+
+		// Parse each item, get text and check if it equals to expectedItem?
+		for (WebElement item : allItems) {
+			String textItem = item.getText().trim();
+			System.out.println("item text: " + textItem);
+
+			// Check if the text equals to expected. If yes, click on item and break the loop
+			if (textItem.equals(expectedItem)) {
+				// Scroll to expected item
+				jsVuejs.executeScript("arguments[0].scrollIntoView(true);", item);
+				Thread.sleep(3000);
+				// wait for item clickable
+				wVuejsExplicit.until(ExpectedConditions.elementToBeClickable(By.xpath(itemLocator)));
+				item.click();
+				Thread.sleep(3000);
+				break;
+			}
+		}
+
+		// Assert selected item
+		Assert.assertTrue(driver.findElement(By.xpath("//li[@class='dropdown-toggle']")).getText().equals(expectedItem));
+
+	}
+
+	public void TC08_handleEditableDropdown() throws Exception {
+		String parentLocator = "//div[@id='basic-place']/input";
+//		String itemLocator = "//div[@id='basic-place']//li";
+		String expectedValue = "Porsche";
+
+		driver.get("http://indrimuska.github.io/jquery-editable-select/");
+
+		// Wait for all item clickable
+		wEditable.until(ExpectedConditions.elementToBeClickable(By.xpath(parentLocator)));
+		driver.findElement(By.xpath(parentLocator)).click();
+
+		driver.findElement(By.xpath(parentLocator)).clear();
+		driver.findElement(By.xpath(parentLocator)).sendKeys(expectedValue);
+		driver.findElement(By.xpath(parentLocator)).sendKeys(Keys.ENTER);
+//		Thread.sleep(3000);
+
+		System.out.println("Text: " + driver.findElement(By.xpath("//div[@id='basic-place']//li[@class='es-visible selected']")).getText());
+
+//		Assert.assertEquals(driver.findElement(By.xpath("//div[@id='basic-place']//li[@class='es-visible selected']")).getText(), expectedValue);
+		// Ở đây không thể dùng xpath ở trên và getText() để check vì xpath đó đang trỏ tới item bên trong dropdown (khi click lên dropdown và
+		// find xpath sẽ thấy highlight)
+
+		// => Dùng getAttribute để check
+		Assert.assertEquals(driver.findElement(By.xpath("//div[@id='basic-place']//li[text()='Porsche']")).getAttribute("class"), "es-visible selected");
+
+	}
+
+	public void TC09_handleEditableDropdownReact() throws Exception {
+
+		driver.get("https://react.semantic-ui.com/maximize/dropdown-example-search-selection/");
+		wReact.until(ExpectedConditions.elementToBeClickable(By.xpath("//input[@class='search']")));
+
+		driver.findElement(By.xpath("//input[@class='search']")).click();
+		driver.findElement(By.xpath("//input[@class='search']")).clear();
+		driver.findElement(By.xpath("//input[@class='search']")).sendKeys("Bahamas");
+		driver.findElement(By.xpath("//input[@class='search']")).sendKeys(Keys.ENTER);
+
+		Assert.assertTrue(driver.findElement(By.xpath("//div[contains(@class,'divider') and text()='Bahamas']")).isDisplayed());
+
+	}
+
+	public void TC10_handleMultiSelectDropdown() throws Exception {
+		String parentLocator = "//div[@id='example']/div/div[2]//button";
+		String itemLocator = "//div[@id='example']/div/div[2]//ul/li";
+//		String expectedMonths[] = { "May", "September", "December" };
+
+		driver.get("http://multiple-select.wenzhixin.net.cn/templates/template.html?v=189&url=basic.html");
+
+		// Vì behavior của dropdown là sau khi chọn 1 item, dropdown sẽ không close mà có thể chọn item tiếp theo luôn
+		// Nên nếu chọn đưa click parentLocator vào trong method selectItemForMultiple ở lần chọn thứ 2 sẽ làm đóng dropdown
+
+		// wait for parent locator clickable and click on it
+		wMulti.until(ExpectedConditions.elementToBeClickable(By.xpath(parentLocator)));
+		driver.findElement(By.xpath(parentLocator)).click();
+
+		// Select May, September, December
+		selectItemForMultiple(itemLocator, "May");
+		Thread.sleep(1000);
+
+		selectItemForMultiple(itemLocator, "September");
+		Thread.sleep(1000);
+
+		selectItemForMultiple(itemLocator, "December");
+		Thread.sleep(1000);
+
+		// Verify if it present May, September, December
+		String outExpected = "May, September, December";
+		Assert.assertEquals(driver.findElement(By.xpath("//div[@id='example']/div/div[2]//button")).getText().trim(), outExpected);
+
+		selectItemForMultiple(itemLocator, "August");
+		selectItemForMultiple(itemLocator, "February");
+
+		// Verify if it 5 of 12 selected
+		String outExpected2 = "5 of 12 selected";
+		Assert.assertEquals(driver.findElement(By.xpath("//div[@id='example']/div/div[2]//button")).getText().trim(), outExpected2);
+
+	}
+
+	@Test
+	public void TC11_handleMultiSelectDropdownNew() throws Exception {
+
+		String parentLocator = "//div[@id='example']/div/div[2]//button";
+		String itemLocator = "//div[@id='example']/div/div[2]//ul/li";
+		String selectedMonths[] = { "May", "September", "December", "January", "August" };
+
+		driver.get("http://multiple-select.wenzhixin.net.cn/templates/template.html?v=189&url=basic.html");
+		wMulti.until(ExpectedConditions.elementToBeClickable(By.xpath(parentLocator)));
+		driver.findElement(By.xpath(parentLocator)).click();
+
+		wMulti.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(itemLocator)));
+		List<WebElement> allItems = driver.findElements(By.xpath(itemLocator));
+
+		int i = 0;
+//		String outExpected = "";
+		for (WebElement item : allItems) {
+			for (String expectedvalue : selectedMonths) {
+				if (expectedvalue.equals(item.getText())) {
+
+//					outExpected = outExpected + ", " + item.getText();
+					jsMulti.executeScript("arguments[0].scrollIntoView(true);", item);
+					item.click();
+					i++;
+
+				}
+			}
+			if (i == 3) {
+				String outExpected = "January, May, August";
+				System.out.println("Text when i=3: " + outExpected);
+				Assert.assertEquals(driver.findElement(By.xpath("//div[@id='example']/div/div[2]//button")).getText().trim(), outExpected);
+			} else if (i >= 4) {
+				int selectedSize = driver.findElements(By.xpath("//div[@id='example']/div/div[2]//ul/li[@class='selected']")).size();
+				String textInDropDown = driver.findElement(By.xpath("//div[@id='example']/div/div[2]//button")).getText().trim();
+				Assert.assertEquals(textInDropDown, selectedSize + " of 12 selected");
+//				Assert.assertEquals(textInDropDown, i + " of " + selectedSize + " selected");
+				System.out.println("Text in dropdown: " + textInDropDown);
+			}
+		}
+
+	}
+
+	// Cần viết 1 method nhận selectedMonths làm input
+	// Duyệt qua từng phần tử và select it in dropdown
+	// Đếm số lần chọn, nếu <= 3 thì kiểm tra text trong dropdown là: '<month>, <month>, <month>
+	// nếu số lần chọn >3 thì kiểm tra text trong dropdown là i of list.size
 
 	@AfterClass
 	public void afterClass() {
@@ -460,6 +644,26 @@ public class Topic_04_TextBox_TextArea_DropList {
 
 	public String getHiddenText(String cssLocator) {
 		return (String) javascriptExecutor.executeScript("return document.querySelector(\"" + cssLocator + "\").textContent");
+	}
+
+	public void selectItemForMultiple(String itemLocator, String expectedValue) {
+
+		// wait for all element in dropdown presence in HTML DOM
+		wMulti.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(itemLocator)));
+
+		// Get all items into list
+		List<WebElement> allItems = driver.findElements(By.xpath(itemLocator));
+
+		// Duyet qua allItems, kiem tra text() = expected, scroll toi item va click on it, break loop
+		for (WebElement item : allItems) {
+			String textItem = item.getText();
+			System.out.println("Text item: " + textItem);
+			if (expectedValue.equals(textItem)) {
+				jsMulti.executeScript("arguments[0].scrollIntoView(true);", item);
+				item.click();
+				break;
+			}
+		}
 	}
 
 }
