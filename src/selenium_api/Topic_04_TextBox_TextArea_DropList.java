@@ -32,7 +32,7 @@ public class Topic_04_TextBox_TextArea_DropList {
 	JavascriptExecutor jsVuejs;
 
 	WebDriverWait wEditable;
-	
+
 	WebDriverWait wReact;
 
 	WebDriverWait wMulti;
@@ -209,7 +209,8 @@ public class Topic_04_TextBox_TextArea_DropList {
 		Assert.assertEquals(select.getOptions().size(), 10);
 		System.out.println("Number of options in dropdown: " + select.getOptions().size());
 
-		// Verify multiple selected dropdown list - https://gist.github.com/daominhdam/9b58f3f533922b4148498fe10d6ecdd5
+		// Verify multiple selected dropdown list -
+		// https://gist.github.com/daominhdam/9b58f3f533922b4148498fe10d6ecdd5
 		WebElement JobRole2 = driver.findElement(By.xpath("//select[@id='job2']"));
 
 		Select select2 = new Select(JobRole2);
@@ -287,8 +288,11 @@ public class Topic_04_TextBox_TextArea_DropList {
 		driver.findElement(By.xpath("//a[contains(@class,'ico-account')]")).click();
 
 		/*
-		 * ***** NOTE: Ở đây cần phải findElement lại 3 dropdownlist vì trang đã được load mới (khi click on My Account) mặc dù xpath không thay đổi. Trường hợp không find lại element sẽ dẫn đến lỗi bên dưới: org.openqa.selenium.StaleElementReferenceException: Element not found in the cache -
-		 * perhaps the page has changed since it was looked up
+		 * ***** NOTE: Ở đây cần phải findElement lại 3 dropdownlist vì trang đã được
+		 * load mới (khi click on My Account) mặc dù xpath không thay đổi. Trường hợp
+		 * không find lại element sẽ dẫn đến lỗi bên dưới:
+		 * org.openqa.selenium.StaleElementReferenceException: Element not found in the
+		 * cache - perhaps the page has changed since it was looked up
 		 */
 
 		dateselect = new Select(driver.findElement(By.xpath("//select[@name='DateOfBirthDay']")));
@@ -337,7 +341,8 @@ public class Topic_04_TextBox_TextArea_DropList {
 		selectItemCustomDropdownNew("//*[@id='games']/span", "//ul[@id='games_options']/li", "Football");
 //		Assert.assertTrue(driver.findElement(By.xpath("//*[@id='games']//option[text()='Football']")).isDisplayed());
 
-		// Ở đây phải assert attribute, vì sau khi chọn, item đó bị ẩn đi không check display như bình thường được
+		// Ở đây phải assert attribute, vì sau khi chọn, item đó bị ẩn đi không check
+		// display như bình thường được
 //		Assert.assertEquals(driver.findElement(By.xpath("//*[@id='games']/span/select/option")).getAttribute("value"), "Game5");
 
 		Assert.assertEquals(getHiddenText("#games_hidden"), "Football");
@@ -385,7 +390,8 @@ public class Topic_04_TextBox_TextArea_DropList {
 		}
 
 		// Kiem tra item selected
-		// Assert bằng xpath thông thường không tìm thấy text. Cần dùng getHiddenText method
+		// Assert bằng xpath thông thường không tìm thấy text. Cần dùng getHiddenText
+		// method
 //		Assert.assertEquals(driver.findElement(By.xpath("//div[contains(@class,'menu')]/div[contains(@class,'selected')]")).getText(), expectedItem);
 		Assert.assertEquals(getHiddenText(cssLocator), expectedItem);
 	}
@@ -413,7 +419,8 @@ public class Topic_04_TextBox_TextArea_DropList {
 			String textItem = item.getText().trim();
 			System.out.println("item text: " + textItem);
 
-			// Check if the text equals to expected. If yes, click on item and break the loop
+			// Check if the text equals to expected. If yes, click on item and break the
+			// loop
 			if (textItem.equals(expectedItem)) {
 				// Scroll to expected item
 				jsVuejs.executeScript("arguments[0].scrollIntoView(true);", item);
@@ -450,7 +457,8 @@ public class Topic_04_TextBox_TextArea_DropList {
 		System.out.println("Text: " + driver.findElement(By.xpath("//div[@id='basic-place']//li[@class='es-visible selected']")).getText());
 
 //		Assert.assertEquals(driver.findElement(By.xpath("//div[@id='basic-place']//li[@class='es-visible selected']")).getText(), expectedValue);
-		// Ở đây không thể dùng xpath ở trên và getText() để check vì xpath đó đang trỏ tới item bên trong dropdown (khi click lên dropdown và
+		// Ở đây không thể dùng xpath ở trên và getText() để check vì xpath đó đang trỏ
+		// tới item bên trong dropdown (khi click lên dropdown và
 		// find xpath sẽ thấy highlight)
 
 		// => Dùng getAttribute để check
@@ -479,8 +487,10 @@ public class Topic_04_TextBox_TextArea_DropList {
 
 		driver.get("http://multiple-select.wenzhixin.net.cn/templates/template.html?v=189&url=basic.html");
 
-		// Vì behavior của dropdown là sau khi chọn 1 item, dropdown sẽ không close mà có thể chọn item tiếp theo luôn
-		// Nên nếu chọn đưa click parentLocator vào trong method selectItemForMultiple ở lần chọn thứ 2 sẽ làm đóng dropdown
+		// Vì behavior của dropdown là sau khi chọn 1 item, dropdown sẽ không close mà
+		// có thể chọn item tiếp theo luôn
+		// Nên nếu chọn đưa click parentLocator vào trong method selectItemForMultiple ở
+		// lần chọn thứ 2 sẽ làm đóng dropdown
 
 		// wait for parent locator clickable and click on it
 		wMulti.until(ExpectedConditions.elementToBeClickable(By.xpath(parentLocator)));
@@ -514,47 +524,82 @@ public class Topic_04_TextBox_TextArea_DropList {
 
 		String parentLocator = "//div[@id='example']/div/div[2]//button";
 		String itemLocator = "//div[@id='example']/div/div[2]//ul/li";
-		String selectedMonths[] = { "May", "September", "December", "January", "August" };
+		String selectedLessMonths[] = { "May", "September", "December" };
+		String testFail[] = { "May", "September", "November" };
+		String selectedMoreMonths[] = { "May", "September", "December", "January", "August" };
 
 		driver.get("http://multiple-select.wenzhixin.net.cn/templates/template.html?v=189&url=basic.html");
-		wMulti.until(ExpectedConditions.elementToBeClickable(By.xpath(parentLocator)));
-		driver.findElement(By.xpath(parentLocator)).click();
 
-		wMulti.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(itemLocator)));
-		List<WebElement> allItems = driver.findElements(By.xpath(itemLocator));
+		selectMultiItemInDropdown(parentLocator, itemLocator, selectedLessMonths);
+		Assert.assertTrue(areItemSelected(selectedLessMonths));
+		Assert.assertFalse(areItemSelected(testFail));
 
-		int i = 0;
-//		String outExpected = "";
-		for (WebElement item : allItems) {
-			for (String expectedvalue : selectedMonths) {
-				if (expectedvalue.equals(item.getText())) {
+//		selectMultiItemInDropdown(parentLocator, itemLocator, selectedMoreMonths);
+//		Assert.assertTrue(areItemSelected(selectedMoreMonths));
 
-//					outExpected = outExpected + ", " + item.getText();
-					jsMulti.executeScript("arguments[0].scrollIntoView(true);", item);
-					item.click();
-					i++;
+	}
 
+	public void selectMultiItemInDropdown(String parentXpath, String childXpath, String[] expectedValue) {
+
+		// 1. Click vao dropdown de xo het cac gia tri
+		wMulti.until(ExpectedConditions.elementToBeClickable(By.xpath(parentXpath)));
+		driver.findElement(By.xpath(parentXpath)).click();
+
+		// 2. Cho cho tat ca gia tri trong dropdown duoc load ra thanh cong
+		wMulti.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(childXpath)));
+		List<WebElement> allItems = driver.findElements(By.xpath(childXpath));
+
+		// 3. Duyet qua het cac phan tu cho den khi thoa het cac dieu kien
+		for (WebElement childElement : allItems) {
+			// May, September, December
+			for (String item : expectedValue) {
+				if (childElement.getText().equals(item)) {
+					jsMulti.executeScript("arguments[0].scrollIntoView(true);", childElement);
+					childElement.click();
+
+					List<WebElement> itemSelected = driver.findElements(By.xpath("//li[@class='selected']"));
+					System.out.println("Selected Items: " + itemSelected.size());
+
+					// Check so luong duoc select de break vong lap, khong chan chay tat ca
+					if (expectedValue.length == itemSelected.size()) {
+						break;
+					}
 				}
 			}
-			if (i == 3) {
-				String outExpected = "January, May, August";
-				System.out.println("Text when i=3: " + outExpected);
-				Assert.assertEquals(driver.findElement(By.xpath("//div[@id='example']/div/div[2]//button")).getText().trim(), outExpected);
-			} else if (i >= 4) {
-				int selectedSize = driver.findElements(By.xpath("//div[@id='example']/div/div[2]//ul/li[@class='selected']")).size();
-				String textInDropDown = driver.findElement(By.xpath("//div[@id='example']/div/div[2]//button")).getText().trim();
-				Assert.assertEquals(textInDropDown, selectedSize + " of 12 selected");
-//				Assert.assertEquals(textInDropDown, i + " of " + selectedSize + " selected");
-				System.out.println("Text in dropdown: " + textInDropDown);
-			}
+
 		}
 
 	}
 
-	// Cần viết 1 method nhận selectedMonths làm input
-	// Duyệt qua từng phần tử và select it in dropdown
-	// Đếm số lần chọn, nếu <= 3 thì kiểm tra text trong dropdown là: '<month>, <month>, <month>
-	// nếu số lần chọn >3 thì kiểm tra text trong dropdown là i of list.size
+	public boolean areItemSelected(String[] itemSelectedText) {
+		List<WebElement> itemSelected = driver.findElements(By.xpath("//li[@class='selected']//input"));
+
+		int numberItemSelected = itemSelected.size();
+
+		// Co the dung xpath: (//button[@class='ms-choice']/span)[1]
+		String allItemSelectedText = driver.findElement(By.xpath("//div[@id='example']/div/div[2]//button/span")).getText();
+		System.out.println("Selected Text: " + allItemSelectedText);
+
+		boolean tmpCheck = true;
+		if (numberItemSelected <= 3 && numberItemSelected > 0) {
+			for (String item : itemSelectedText) {
+				if (allItemSelectedText.contains(item)) {
+					System.out.println("Check Text: " + item);
+				} else {
+					tmpCheck = false;
+				}
+			}
+			if (tmpCheck) {
+				return true;
+			} else {
+				return false;
+			}
+
+		} else {
+			return driver.findElement(By.xpath("//button[@class='ms-choice']/span[text()='" + numberItemSelected + " of 12 selected']")).isDisplayed();
+		}
+
+	}
 
 	@AfterClass
 	public void afterClass() {
@@ -654,7 +699,8 @@ public class Topic_04_TextBox_TextArea_DropList {
 		// Get all items into list
 		List<WebElement> allItems = driver.findElements(By.xpath(itemLocator));
 
-		// Duyet qua allItems, kiem tra text() = expected, scroll toi item va click on it, break loop
+		// Duyet qua allItems, kiem tra text() = expected, scroll toi item va click on
+		// it, break loop
 		for (WebElement item : allItems) {
 			String textItem = item.getText();
 			System.out.println("Text item: " + textItem);
