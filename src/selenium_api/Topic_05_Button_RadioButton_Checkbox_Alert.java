@@ -74,7 +74,6 @@ public class Topic_05_Button_RadioButton_Checkbox_Alert {
 
 	}
 
-	@Test
 	public void TC02_handleDefaultCheckboxRadioButton() throws Exception {
 //			Step 01 - Truy cập trang: http://demos.telerik.com/kendo-ui/styling/checkboxes
 		driver.get("http://demos.telerik.com/kendo-ui/styling/checkboxes");
@@ -111,6 +110,64 @@ public class Topic_05_Button_RadioButton_Checkbox_Alert {
 			System.out.println("Radio button is NOT selected. Re-select.");
 			petrolRadio.click();
 		}
+	}
+
+	@Test
+	public void TC03_handleCustomCheckboxRadioButton() throws Exception {
+//		Step 01 - Truy cập vào trang https://material.angular.io/components/radio/examples
+		driver.get("https://material.angular.io/components/radio/examples");
+
+//		Step 02 - Click vào Radio button: Summer
+
+		WebElement summerRadio = driver.findElement(By.xpath("//span[@class='mat-radio-label-content' and contains(text(), 'Summer')]/preceding-sibling::span/input"));
+		wait.until(ExpectedConditions.elementToBeClickable(summerRadio));
+
+//		Ở đây vì thẻ input trong element summerRadio không visible trên DOM (không highlight khi hold on xpath)
+//		nên việc dùng click action của selenium sẽ báo lỗi:
+//		org.openqa.selenium.WebDriverException: unknown error: Element <input type="radio"...> is not clickable
+//		=> Sử dụng js để click lên input element.
+//		
+		jsExecutor.executeScript("arguments[0].click();", summerRadio);
+		Thread.sleep(3000);
+
+//		Select another radio button to check code re-check "summer
+		WebElement springRadioElement = driver.findElement(By.xpath("//span[@class='mat-radio-label-content' and contains(text(), 'Spring')]/preceding-sibling::span/input"));
+		jsExecutor.executeScript("arguments[0].click();", springRadioElement);
+
+//		Step 03 - Kiểm tra radio button đó đã chọn hay chưa/ nếu chưa chọn lại
+		if (!summerRadio.isSelected()) {
+			System.out.println("Summer radiobutton is not selected. Re-select...");
+			jsExecutor.executeScript("arguments[0].click();", summerRadio);
+		}
+
+//		Step 04 - Truy cập vào trang https://material.angular.io/components/checkbox/examples
+		driver.get("https://material.angular.io/components/checkbox/examples");
+
+//		Step 05 - Click vào checkbox:
+//				+ checked
+//				+ Indeterminate
+		WebElement CheckBox1 = driver.findElement(By.xpath("//mat-checkbox[@id='mat-checkbox-1']//input"));
+
+		WebElement CheckBox2 = driver.findElement(By.xpath("//mat-checkbox[@id='mat-checkbox-2']//input"));
+
+		// scroll to Checkbox
+		jsExecutor.executeScript("arguments[0].scrollIntoView(true);", CheckBox1);
+
+		Commons.clickElementByJavascript(driver, CheckBox1);
+		Commons.clickElementByJavascript(driver, CheckBox2);
+		Thread.sleep(3000);
+		
+//		Step 06 - Kiểm tra checkbox đó đã chọn
+		Assert.assertTrue(CheckBox1.isSelected());
+		Assert.assertTrue(CheckBox2.isSelected());
+
+//		Step 07 - Sau khi checkbox đã được chọn - bỏ chọn nó và kiểm tra nó chưa được chọn
+		Commons.clickElementByJavascript(driver, CheckBox1);
+		Commons.clickElementByJavascript(driver, CheckBox2);
+		Thread.sleep(3000);
+		
+		Assert.assertFalse(CheckBox1.isSelected());
+		Assert.assertFalse(CheckBox2.isSelected());
 	}
 
 	@AfterClass

@@ -40,7 +40,9 @@ public class Commons {
 	}
 
 	// Click an element by Javascript executor
+
 	public static void clickElementByJavascript(WebDriver driver, WebElement element) {
+		// Không cần quan tâm element có visible hay không?
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		js.executeScript("arguments[0].click();", element);
 	}
