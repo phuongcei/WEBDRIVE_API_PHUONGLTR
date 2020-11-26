@@ -5,6 +5,7 @@ import static org.testng.Assert.assertTrue;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -112,7 +113,6 @@ public class Topic_05_Button_RadioButton_Checkbox_Alert {
 		}
 	}
 
-	@Test
 	public void TC03_handleCustomCheckboxRadioButton() throws Exception {
 //		Step 01 - Truy cập vào trang https://material.angular.io/components/radio/examples
 		driver.get("https://material.angular.io/components/radio/examples");
@@ -156,7 +156,7 @@ public class Topic_05_Button_RadioButton_Checkbox_Alert {
 		Commons.clickElementByJavascript(driver, CheckBox1);
 		Commons.clickElementByJavascript(driver, CheckBox2);
 		Thread.sleep(3000);
-		
+
 //		Step 06 - Kiểm tra checkbox đó đã chọn
 		Assert.assertTrue(CheckBox1.isSelected());
 		Assert.assertTrue(CheckBox2.isSelected());
@@ -165,11 +165,71 @@ public class Topic_05_Button_RadioButton_Checkbox_Alert {
 		Commons.clickElementByJavascript(driver, CheckBox1);
 		Commons.clickElementByJavascript(driver, CheckBox2);
 		Thread.sleep(3000);
-		
+
 		Assert.assertFalse(CheckBox1.isSelected());
 		Assert.assertFalse(CheckBox2.isSelected());
 	}
 
+	public void TC04_handleAcceptAlert() throws Exception {
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+
+//		Step 01 - Truy cập vào trang https://automationfc.github.io/basic-form/index.html
+		driver.get("https://automationfc.github.io/basic-form/index.html");
+
+//		Step 02 - Click vào button: Click for JS Alert
+		js.executeScript("arguments[0].scrollIntoView(true);", driver.findElement(By.xpath("//button[text()='Click for JS Alert']")));
+		driver.findElement(By.xpath("//button[text()='Click for JS Alert']")).click();
+
+//		Step 03 - Verify message hiển thị trong alert là: I am a JS Alert
+		Alert alert = driver.switchTo().alert();
+		Assert.assertEquals(alert.getText(), "I am a JS Alert");
+		Thread.sleep(4000);
+
+//		Step 04 - Accept alert và verify message hiển thị tại Result là: You clicked an alert successfully
+		alert.accept();
+		Assert.assertEquals(driver.findElement(By.xpath("//p[@id='result']")).getText(), "You clicked an alert successfully");
+
+	}
+
+	public void TC05_handleConfirmAlert() throws Exception {
+//		Step 01 - Truy cập vào trang https://automationfc.github.io/basic-form/index.html
+		driver.get("https://automationfc.github.io/basic-form/index.html");
+
+//		Step 02 - Click vào button: Click for JS Confirm
+		driver.findElement(By.xpath("//button[text()='Click for JS Confirm']")).click();
+
+//		Step 03 - Verify message hiển thị trong alert là: I am a JS Confirm
+		Alert alert = driver.switchTo().alert();
+		String alertTextString = alert.getText();
+		Assert.assertEquals(alertTextString, "I am a JS Confirm");
+
+//		Step 04 - Cancel alert và verify message hiển thị tại Result là: You clicked: Cancel
+		alert.dismiss();
+		Assert.assertEquals(driver.findElement(By.xpath("//p[@id='result']")).getText(), "You clicked: Cancel");
+
+	}
+
+	@Test
+	public void TC06_handlePromptAlert() throws Exception{
+//		Step 01 - Truy cập vào trang https://automationfc.github.io/basic-form/index.html
+		driver.get("https://automationfc.github.io/basic-form/index.html");
+		
+//		Step 02 - Click vào button: Click for JS Prompt
+		driver.findElement(By.xpath("//button[text()='Click for JS Prompt']")).click();
+		
+//		Step 03 - Verify message hiển thị trong alert là: I am a JS prompt
+		Alert alert = driver.switchTo().alert();
+		String alertText = alert.getText();
+		Assert.assertEquals(alertText, "I am a JS prompt");
+		
+//		Step 04 - Nhập vào text bất kì và verify message hiển thị tại Result là You entered: <your_text>
+		alert.sendKeys("Le Tran Phuong");
+		alert.accept();
+		Assert.assertEquals(driver.findElement(By.xpath("//p[@id='result']")).getText(), "You entered: Le Tran Phuong");
+		
+
+	}
+	
 	@AfterClass
 	public void afterClass() {
 		driver.quit();
