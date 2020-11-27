@@ -253,12 +253,12 @@ public class Topic_05_Button_RadioButton_Checkbox_Alert {
 		Runtime.getRuntime().exec("<Path to autoIT script.exe>");  
 		//Run CompileScript to compile autoIT script -> exe file
 	
-		//AutoIT script có thể như bên dứoi:
+		//AutoIT script as below:
 //			WinWaitActive("Sign in")
 //			Sleep(5000)
-//			Send("username")
+//			Send("admin")
 //			Send("{TAB}")
-//			Send("password")
+//			Send("admin")
 //			Send("{ENTER}")
 
 //		Cuối cùng thì verify message.
