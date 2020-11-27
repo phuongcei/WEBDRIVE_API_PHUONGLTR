@@ -209,27 +209,61 @@ public class Topic_05_Button_RadioButton_Checkbox_Alert {
 
 	}
 
-	@Test
-	public void TC06_handlePromptAlert() throws Exception{
+	public void TC06_handlePromptAlert() throws Exception {
 //		Step 01 - Truy cập vào trang https://automationfc.github.io/basic-form/index.html
 		driver.get("https://automationfc.github.io/basic-form/index.html");
-		
+
 //		Step 02 - Click vào button: Click for JS Prompt
 		driver.findElement(By.xpath("//button[text()='Click for JS Prompt']")).click();
-		
+
 //		Step 03 - Verify message hiển thị trong alert là: I am a JS prompt
 		Alert alert = driver.switchTo().alert();
 		String alertText = alert.getText();
 		Assert.assertEquals(alertText, "I am a JS prompt");
-		
+
 //		Step 04 - Nhập vào text bất kì và verify message hiển thị tại Result là You entered: <your_text>
 		alert.sendKeys("Le Tran Phuong");
 		alert.accept();
 		Assert.assertEquals(driver.findElement(By.xpath("//p[@id='result']")).getText(), "You entered: Le Tran Phuong");
-		
 
 	}
 	
+	public void TC07_handleAuthenAlertBypassLink() throws Exception {
+		String username = "admin";
+		String password = "admin";
+//		Step 01 - Truy cập vào trang http://the-internet.herokuapp.com/basic_auth
+//					bằng cách pass username/password vào link 
+		driver.get("http://" + username + ":" + password + "@the-internet.herokuapp.com/basic_auth");
+
+//		Step 02 - Verify message hiển thị sau khi login thành công:
+//			Congratulations! You must have the proper credentials.
+
+		Thread.sleep(5000);
+		Assert.assertTrue(driver.findElement(By.xpath("//div[@id='content']//p")).getText().trim().equals("Congratulations! You must have the proper credentials."));
+	}
+	
+	@Test
+	// Guide: https://www.youtube.com/watch?v=nKIIgQgAScQ
+	public void TC08_handleAuthenAlertUsingAutoIT() throws Exception {
+		String username = "admin";
+		String password = "admin";
+		
+		driver.get("http://the-internet.herokuapp.com/basic_auth");
+		
+		Runtime.getRuntime().exec("<Path to autoIT script.exe>");  
+		//Run CompileScript to compile autoIT script -> exe file
+	
+		//AutoIT script có thể như bên dứoi:
+//			WinWaitActive("Sign in")
+//			Sleep(5000)
+//			Send("username")
+//			Send("{TAB}")
+//			Send("password")
+//			Send("{ENTER}")
+
+//		Cuối cùng thì verify message.
+	}
+
 	@AfterClass
 	public void afterClass() {
 		driver.quit();

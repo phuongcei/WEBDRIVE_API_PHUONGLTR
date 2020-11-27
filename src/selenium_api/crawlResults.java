@@ -36,7 +36,7 @@ public class crawlResults {
 	@Test
 	public void crawl_result_from_web() throws Exception {
 
-		driver.findElement(xpath_linkTo655).click();
+		driver.findElement(xpath_linkTo645).click();
 
 		// Get list of dates
 
