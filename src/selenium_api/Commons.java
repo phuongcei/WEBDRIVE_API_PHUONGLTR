@@ -1,11 +1,21 @@
 package selenium_api;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Random;
 
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+
+import com.google.common.cache.AbstractCache.SimpleStatsCounter;
+import com.sun.jna.platform.win32.OaIdl.DATE;
 
 public class Commons {
 
@@ -47,4 +57,25 @@ public class Commons {
 		js.executeScript("arguments[0].click();", element);
 	}
 
+	public static void takeSnapShot(WebDriver driver, String fileName) {
+		TakesScreenshot scrShot = ((TakesScreenshot) driver);
+		File sourceFile = scrShot.getScreenshotAs(OutputType.FILE);
+		File destFile = new File(fileName);
+		try {
+			FileUtils.copyFile(sourceFile, destFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static String getTimeStampValue() throws IOException {
+		// Output format example:  Wed Dec 02 22-21-39 ICT 2020
+		Calendar calendar = Calendar.getInstance();
+		Date time = calendar.getTime();
+		String timeStamp = time.toString();
+		System.out.println(timeStamp);
+		String systime = timeStamp.replace(":", "-");
+		System.out.println(systime);
+		return systime;
+	}
 }

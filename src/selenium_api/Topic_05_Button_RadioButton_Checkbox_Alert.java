@@ -227,22 +227,25 @@ public class Topic_05_Button_RadioButton_Checkbox_Alert {
 		Assert.assertEquals(driver.findElement(By.xpath("//p[@id='result']")).getText(), "You entered: Le Tran Phuong");
 
 	}
-	
+	@Test
 	public void TC07_handleAuthenAlertBypassLink() throws Exception {
+		String sourceFolder = System.getProperty("user.dir");
 		String username = "admin";
 		String password = "admin";
+		
 //		Step 01 - Truy cập vào trang http://the-internet.herokuapp.com/basic_auth
 //					bằng cách pass username/password vào link 
 		driver.get("http://" + username + ":" + password + "@the-internet.herokuapp.com/basic_auth");
 
 //		Step 02 - Verify message hiển thị sau khi login thành công:
 //			Congratulations! You must have the proper credentials.
-
+		System.out.println("sourceFolder: " + sourceFolder);
+		Commons.takeSnapShot(driver, sourceFolder + "/screenshot/" + Commons.getTimeStampValue() + ".png");
 		Thread.sleep(5000);
 		Assert.assertTrue(driver.findElement(By.xpath("//div[@id='content']//p")).getText().trim().equals("Congratulations! You must have the proper credentials."));
 	}
 	
-	@Test
+	
 	// Guide: https://www.youtube.com/watch?v=nKIIgQgAScQ
 	public void TC08_handleAuthenAlertUsingAutoIT() throws Exception {
 		String username = "admin";
