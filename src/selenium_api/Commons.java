@@ -14,8 +14,6 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import com.google.common.cache.AbstractCache.SimpleStatsCounter;
-import com.sun.jna.platform.win32.OaIdl.DATE;
 
 public class Commons {
 
@@ -50,26 +48,34 @@ public class Commons {
 	}
 
 	// Click an element by Javascript executor
-
 	public static void clickElementByJavascript(WebDriver driver, WebElement element) {
 		// Không cần quan tâm element có visible hay không?
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		js.executeScript("arguments[0].click();", element);
 	}
 
+	// Take a screen shot
 	public static void takeSnapShot(WebDriver driver, String fileName) {
+		// Reference: https://www.guru99.com/take-screenshot-selenium-webdriver.html
+
+		// Convert web driver object to TakeScreenshot
 		TakesScreenshot scrShot = ((TakesScreenshot) driver);
+
+		// Call getScreenshotAs method to create image file
 		File sourceFile = scrShot.getScreenshotAs(OutputType.FILE);
 		File destFile = new File(fileName);
+
 		try {
+			// Copy file to Desired Location
 			FileUtils.copyFile(sourceFile, destFile);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
+	// Get system time in specific format
 	public static String getTimeStampValue() throws IOException {
-		// Output format example:  Wed Dec 02 22-21-39 ICT 2020
+		// Output format example: Wed Dec 02 22-21-39 ICT 2020
 		Calendar calendar = Calendar.getInstance();
 		Date time = calendar.getTime();
 		String timeStamp = time.toString();
